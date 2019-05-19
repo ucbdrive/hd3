@@ -1,0 +1,8 @@
+cffi
+matplotlib
+numpy
+opencv-python
+scipy
+tensorboardX
+pillow
+cupy
