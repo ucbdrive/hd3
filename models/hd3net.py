@@ -1,5 +1,3 @@
-import math
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -13,6 +11,7 @@ BatchNorm = nn.BatchNorm2d
 
 
 class Context(nn.Module):
+
     def __init__(self, inplane, classes):
         super(Context, self).__init__()
         self.num_convs = 7
@@ -22,20 +21,17 @@ class Context(nn.Module):
             setattr(
                 self, 'dc_conv_{}'.format(i),
                 nn.Sequential(
-                    nn.Conv2d(ch[i],
-                              ch[i + 1],
-                              kernel_size=3,
-                              stride=1,
-                              padding=dilations[i],
-                              dilation=dilations[i],
-                              bias=False), BatchNorm(ch[i + 1]),
+                    nn.Conv2d(
+                        ch[i],
+                        ch[i + 1],
+                        kernel_size=3,
+                        stride=1,
+                        padding=dilations[i],
+                        dilation=dilations[i],
+                        bias=False), BatchNorm(ch[i + 1]),
                     nn.ReLU(inplace=True)))
-        self.cls = nn.Conv2d(ch[-1],
-                             classes,
-                             kernel_size=1,
-                             stride=1,
-                             padding=0,
-                             bias=True)
+        self.cls = nn.Conv2d(
+            ch[-1], classes, kernel_size=1, stride=1, padding=0, bias=True)
 
     def forward(self, x):
         out = x
@@ -47,28 +43,25 @@ class Context(nn.Module):
 
 
 class Decoder(nn.Module):
+
     def __init__(self, inplane, block, classes, up_classes):
         super(Decoder, self).__init__()
         self.mapping = block(inplane, 128)
         self.cls = nn.Sequential(
             BatchNorm(128), nn.ReLU(inplace=True),
-            nn.Conv2d(128,
-                      classes,
-                      kernel_size=1,
-                      stride=1,
-                      padding=0,
-                      bias=True))
+            nn.Conv2d(
+                128, classes, kernel_size=1, stride=1, padding=0, bias=True))
         self.up = None
         if up_classes > 0:
             self.up = nn.Sequential(
                 BatchNorm(128), nn.ReLU(inplace=True),
-                nn.ConvTranspose2d(128,
-                                   up_classes,
-                                   kernel_size=4,
-                                   stride=2,
-                                   padding=1,
-                                   bias=False), BatchNorm(up_classes),
-                nn.ReLU(inplace=True))
+                nn.ConvTranspose2d(
+                    128,
+                    up_classes,
+                    kernel_size=4,
+                    stride=2,
+                    padding=1,
+                    bias=False), BatchNorm(up_classes), nn.ReLU(inplace=True))
 
     def forward(self, x):
         out = self.mapping(x)
@@ -78,6 +71,7 @@ class Decoder(nn.Module):
 
 
 class HD3Net(nn.Module):
+
     def __init__(self, task, encoder, decoder, corr_range, context=False,
                  ds=6):
         super(HD3Net, self).__init__()
@@ -115,7 +109,8 @@ class HD3Net(nn.Module):
         for l in range(self.levels):
             setattr(self, 'cost_bn_{}'.format(l), BatchNorm(self.classes[l]))
             input_d = self.classes[l] + feat_d_offset[l] + up_d_offset[
-                l] + self.dim * (l > 0)
+                l] + self.dim * (
+                    l > 0)
             if l < self.levels - 1:
                 up_classes = self.classes[l + 1]
             else:
@@ -126,10 +121,11 @@ class HD3Net(nn.Module):
             else:
                 setattr(
                     self, 'Decoder_{}'.format(l),
-                    Decoder(input_d,
-                            dec_block,
-                            self.classes[l],
-                            up_classes=up_classes))
+                    Decoder(
+                        input_d,
+                        dec_block,
+                        self.classes[l],
+                        up_classes=up_classes))
 
         for m in self.modules():
             classname = m.__class__.__name__
@@ -149,8 +145,8 @@ class HD3Net(nn.Module):
     def forward(self, x):
         # extract pyramid features
         bs = x.size(0)
-        feat_list = self.encoder(torch.cat([x[:, :3, :, :], x[:, 3:, :, :]],
-                                           0))
+        feat_list = self.encoder(
+            torch.cat([x[:, :3, :, :], x[:, 3:, :, :]], 0))
         fp_0 = [f[:bs, :, :, :] for f in feat_list[::-1]]
         fp_1 = [f[bs:, :, :, :] for f in feat_list[::-1]]
 
@@ -190,10 +186,11 @@ class HD3Net(nn.Module):
             ms_pred.append([prob_map, curr_vect * 2**(self.ds - l), up_feat])
 
             if l < self.levels - 1:
-                up_curr_vect = 2 * F.interpolate(curr_vect,
-                                                 scale_factor=2,
-                                                 mode='bilinear',
-                                                 align_corners=True)
+                up_curr_vect = 2 * F.interpolate(
+                    curr_vect,
+                    scale_factor=2,
+                    mode='bilinear',
+                    align_corners=True)
 
         ms_prob = [l[0] for l in ms_pred]
         ms_vect = [l[1] for l in ms_pred]

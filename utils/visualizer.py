@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from . import flowlib as fl
 from models.hd3_ops import *
@@ -36,8 +35,8 @@ def get_visualization(img_list, label_list, ms_vect, ms_prob, ds=6, idx=0):
             vis_list.append(_flow_to_img(pred_flo, max_mag))
 
             # epe error visualization
-            epe_error = torch.norm(pred_flo - gt_flo, 2, 0,
-                                   keepdim=False) * valid_mask[0, :, :]
+            epe_error = torch.norm(
+                pred_flo - gt_flo, 2, 0, keepdim=False) * valid_mask[0, :, :]
             normalizer = max(torch.max(epe_error), 1)
             epe_error = 1 - epe_error / normalizer
             vis_list.append(_visualize_heat(epe_error))

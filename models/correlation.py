@@ -295,6 +295,7 @@ def cupy_launch(strFunction, strKernel):
 
 
 class _FunctionCorrelation(torch.autograd.Function):
+
     @staticmethod
     def forward(self, first, second):
         self.save_for_backward(first, second)
@@ -468,6 +469,7 @@ def FunctionCorrelation(tensorFirst, tensorSecond):
 
 
 class ModuleCorrelation(torch.nn.Module):
+
     def __init__(self):
         super(ModuleCorrelation, self).__init__()
 

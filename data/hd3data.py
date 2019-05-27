@@ -1,7 +1,5 @@
-import os
-from os.path import exists, join, split, splitext
+from os.path import exists, join, splitext
 import numpy as np
-from glob import glob
 from PIL import Image
 import utils.flowlib as fl
 from torch.utils.data import Dataset
@@ -130,14 +128,15 @@ def get_transform(dataset_name, task, evaluate=True):
                                                 'nearest'),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
-                transforms.RandomPhotometric(noise_stddev=0.0,
-                                             min_contrast=-0.3,
-                                             max_contrast=0.3,
-                                             brightness_stddev=0.02,
-                                             min_color=0.9,
-                                             max_color=1.1,
-                                             min_gamma=0.7,
-                                             max_gamma=1.5),
+                transforms.RandomPhotometric(
+                    noise_stddev=0.0,
+                    min_contrast=-0.3,
+                    max_contrast=0.3,
+                    brightness_stddev=0.02,
+                    min_color=0.9,
+                    max_color=1.1,
+                    min_gamma=0.7,
+                    max_gamma=1.5),
                 transforms.Normalize(mean=mean, std=std)
             ])
         else:
@@ -145,14 +144,15 @@ def get_transform(dataset_name, task, evaluate=True):
                 transforms.MultiScaleRandomCrop([0.5, 1.15], [320, 896],
                                                 'nearest'),
                 transforms.ToTensor(),
-                transforms.RandomPhotometric(noise_stddev=0.0,
-                                             min_contrast=-0.3,
-                                             max_contrast=0.3,
-                                             brightness_stddev=0.02,
-                                             min_color=0.9,
-                                             max_color=1.1,
-                                             min_gamma=0.7,
-                                             max_gamma=1.5),
+                transforms.RandomPhotometric(
+                    noise_stddev=0.0,
+                    min_contrast=-0.3,
+                    max_contrast=0.3,
+                    brightness_stddev=0.02,
+                    min_color=0.9,
+                    max_color=1.1,
+                    min_gamma=0.7,
+                    max_gamma=1.5),
                 transforms.Normalize(mean=mean, std=std)
             ])
 
@@ -169,14 +169,15 @@ def get_transform(dataset_name, task, evaluate=True):
                                             'bilinear'),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.RandomPhotometric(noise_stddev=0.0,
-                                         min_contrast=-0.3,
-                                         max_contrast=0.3,
-                                         brightness_stddev=0.02,
-                                         min_color=0.9,
-                                         max_color=1.1,
-                                         min_gamma=0.7,
-                                         max_gamma=1.5),
+            transforms.RandomPhotometric(
+                noise_stddev=0.0,
+                min_contrast=-0.3,
+                max_contrast=0.3,
+                brightness_stddev=0.02,
+                min_color=0.9,
+                max_color=1.1,
+                min_gamma=0.7,
+                max_gamma=1.5),
             transforms.Normalize(mean=mean, std=std)
         ])
 

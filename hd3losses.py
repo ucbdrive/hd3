@@ -1,21 +1,17 @@
-import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
-import cv2
-import utils.flowlib as fl
 from models.hd3_ops import *
 
 
 class LossCalculator(object):
+
     def __init__(self, task):
         assert task in ['flow', 'stereo']
         self.task = task
         self.dim = 1 if task == 'stereo' else 2
 
     def __call__(self, ms_prob, ms_pred, gt, corr_range, ds=6):
-        B, C, H, W = gt.size()
         lv = len(ms_prob)
         criterion = nn.KLDivLoss(reduction='batchmean').cuda()
         losses = {}
@@ -25,14 +21,15 @@ class LossCalculator(object):
             if self.task == 'stereo':
                 scaled_gt = scaled_gt[:, 0, :, :].unsqueeze(1)
             if l > 0:
-                scaled_gt = scaled_gt - F.interpolate(ms_pred[l - 1],
-                                                      scale_factor=2,
-                                                      mode='bilinear',
-                                                      align_corners=True)
+                scaled_gt = scaled_gt - F.interpolate(
+                    ms_pred[l - 1],
+                    scale_factor=2,
+                    mode='bilinear',
+                    align_corners=True)
             scaled_gt = scaled_gt / 2**(ds - l)
             gt_dist = vector2density(scaled_gt, corr_range[l],
                                      self.dim) * valid_mask
-            kld_loss += 4**(ds - l) / (H*W) * criterion(
+            kld_loss += 4**(ds - l) / (H * W) * criterion(
                 F.log_softmax(ms_prob[l], dim=1), gt_dist.detach())
 
         losses['total'] = kld_loss

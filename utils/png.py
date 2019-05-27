@@ -74,7 +74,7 @@ each letter abbreviates a single channel: *L* is for Luminance or Luma
 or Lightness which is the channel used in greyscale images; *R*, *G*,
 *B* stand for Red, Green, Blue, the components of a colour image; *A*
 stands for Alpha, the opacity channel (used for transparency effects,
-but higher values are more opaque, so it makes sense to call it 
+but higher values are more opaque, so it makes sense to call it
 opacity).
 
 A note on formats
@@ -300,6 +300,7 @@ def check_color(c, greyscale, which):
 
 
 class Error(Exception):
+
     def __str__(self):
         return self.__class__.__name__ + ': ' + ' '.join(self.args)
 
@@ -630,7 +631,7 @@ class Writer:
 
         Most users are expected to find the :meth:`write` or
         :meth:`write_array` method more convenient.
-        
+
         The rows should be given to this method in the order that
         they appear in the output file.  For straightlaced images,
         this is the usual top to bottom ordering, but for interlaced
@@ -989,55 +990,6 @@ def filter_scanline(type, line, fo, prev=None):
     # time (fortunately this is linear).
     out = array('B', [type])
 
-    def sub():
-        ai = -fo
-        for x in line:
-            if ai >= 0:
-                x = (x - line[ai]) & 0xff
-            out.append(x)
-            ai += 1
-
-    def up():
-        for i, x in enumerate(line):
-            x = (x - prev[i]) & 0xff
-            out.append(x)
-
-    def average():
-        ai = -fo
-        for i, x in enumerate(line):
-            if ai >= 0:
-                x = (x - ((line[ai] + prev[i]) >> 1)) & 0xff
-            else:
-                x = (x - (prev[i] >> 1)) & 0xff
-            out.append(x)
-            ai += 1
-
-    def paeth():
-        # http://www.w3.org/TR/PNG/#9Filter-type-4-Paeth
-        ai = -fo  # also used for ci
-        for i, x in enumerate(line):
-            a = 0
-            b = prev[i]
-            c = 0
-
-            if ai >= 0:
-                a = line[ai]
-                c = prev[ai]
-            p = a + b - c
-            pa = abs(p - a)
-            pb = abs(p - b)
-            pc = abs(p - c)
-            if pa <= pb and pa <= pc:
-                Pr = a
-            elif pb <= pc:
-                Pr = b
-            else:
-                Pr = c
-
-            x = (x - Pr) & 0xff
-            out.append(x)
-            ai += 1
-
     if not prev:
         # We're on the first line.  Some of the filters can be reduced
         # to simpler cases which makes handling the line "off the top"
@@ -1126,7 +1078,7 @@ def from_array(a, mode=None, info={}):
     metadata (in the same style as the arguments to the
     :class:`png.Writer` class).  For this function the keys that are
     useful are:
-    
+
     height
       overrides the height derived from the array dimensions and allows
       *a* to be an iterable.
@@ -1264,7 +1216,7 @@ class Image:
     def __init__(self, rows, info):
         """
         .. note ::
-        
+
           The constructor is not public.  Please do not call it.
         """
 
@@ -2146,7 +2098,7 @@ class Reader:
         (*width*, *height*, *pixels*, *metadata*).
         *width*, *height*, *metadata* are as per the
         :meth:`read` method.
-        
+
         *pixels* is the pixel data in boxed row flat pixel format.
         """
 
@@ -2286,6 +2238,7 @@ try:
 except NameError:
 
     class pngfilters(object):
+
         def undo_filter_sub(filter_unit, scanline, previous, result):
             """Undo sub filter."""
 
@@ -2566,35 +2519,40 @@ def _add_common_options(parser):
     common between this PNG--PNM conversion tool and the gen
     tool.
     """
-    parser.add_option("-i",
-                      "--interlace",
-                      default=False,
-                      action="store_true",
-                      help="create an interlaced PNG file (Adam7)")
-    parser.add_option("-t",
-                      "--transparent",
-                      action="store",
-                      type="string",
-                      metavar="#RRGGBB",
-                      help="mark the specified colour as transparent")
-    parser.add_option("-b",
-                      "--background",
-                      action="store",
-                      type="string",
-                      metavar="#RRGGBB",
-                      help="save the specified background colour")
-    parser.add_option("-g",
-                      "--gamma",
-                      action="store",
-                      type="float",
-                      metavar="value",
-                      help="save the specified gamma value")
-    parser.add_option("-c",
-                      "--compression",
-                      action="store",
-                      type="int",
-                      metavar="level",
-                      help="zlib compression level (0-9)")
+    parser.add_option(
+        "-i",
+        "--interlace",
+        default=False,
+        action="store_true",
+        help="create an interlaced PNG file (Adam7)")
+    parser.add_option(
+        "-t",
+        "--transparent",
+        action="store",
+        type="string",
+        metavar="#RRGGBB",
+        help="mark the specified colour as transparent")
+    parser.add_option(
+        "-b",
+        "--background",
+        action="store",
+        type="string",
+        metavar="#RRGGBB",
+        help="save the specified background colour")
+    parser.add_option(
+        "-g",
+        "--gamma",
+        action="store",
+        type="float",
+        metavar="value",
+        help="save the specified gamma value")
+    parser.add_option(
+        "-c",
+        "--compression",
+        action="store",
+        type="int",
+        metavar="level",
+        help="zlib compression level (0-9)")
     return parser
 
 
@@ -2608,17 +2566,19 @@ def _main(argv):
     version = '%prog ' + __version__
     parser = OptionParser(version=version)
     parser.set_usage("%prog [options] [imagefile]")
-    parser.add_option('-r',
-                      '--read-png',
-                      default=False,
-                      action='store_true',
-                      help='Read PNG, write PNM')
-    parser.add_option("-a",
-                      "--alpha",
-                      action="store",
-                      type="string",
-                      metavar="pgmfile",
-                      help="alpha channel transparency (RGBA)")
+    parser.add_option(
+        '-r',
+        '--read-png',
+        default=False,
+        action='store_true',
+        help='Read PNG, write PNM')
+    parser.add_option(
+        "-a",
+        "--alpha",
+        action="store",
+        type="string",
+        metavar="pgmfile",
+        help="alpha channel transparency (RGBA)")
     _add_common_options(parser)
 
     (options, args) = parser.parse_args(args=argv[1:])
@@ -2668,16 +2628,17 @@ def _main(argv):
                 'your maxval (%s) not in supported list %s' %
                 (maxval, str(supported)))
         bitdepth = mi + 1
-        writer = Writer(width,
-                        height,
-                        greyscale=greyscale,
-                        bitdepth=bitdepth,
-                        interlace=options.interlace,
-                        transparent=options.transparent,
-                        background=options.background,
-                        alpha=bool(pamalpha or options.alpha),
-                        gamma=options.gamma,
-                        compression=options.compression)
+        writer = Writer(
+            width,
+            height,
+            greyscale=greyscale,
+            bitdepth=bitdepth,
+            interlace=options.interlace,
+            transparent=options.transparent,
+            background=options.background,
+            alpha=bool(pamalpha or options.alpha),
+            gamma=options.gamma,
+            compression=options.compression)
         if options.alpha:
             pgmfile = open(options.alpha, 'rb')
             format, awidth, aheight, adepth, amaxval = \

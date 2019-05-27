@@ -8,11 +8,8 @@
 # ==============================
 """
 from . import png
-from . import pfm
 import numpy as np
-import matplotlib.colors as cl
 from PIL import Image
-from scipy import misc
 import cv2
 import re
 
@@ -108,8 +105,8 @@ def flow_error(tu, tv, u, v):
     su = u[:]
     sv = v[:]
 
-    idxUnknow = (abs(stu) > UNKNOWN_FLOW_THRESH) | (abs(stv) >
-                                                    UNKNOWN_FLOW_THRESH)
+    idxUnknow = (abs(stu) > UNKNOWN_FLOW_THRESH) | (
+        abs(stv) > UNKNOWN_FLOW_THRESH)
     stu[idxUnknow] = 0
     stv[idxUnknow] = 0
     su[idxUnknow] = 0
@@ -119,14 +116,10 @@ def flow_error(tu, tv, u, v):
     index_su = su[ind2]
     index_sv = sv[ind2]
     an = 1.0 / np.sqrt(index_su**2 + index_sv**2 + 1)
-    un = index_su * an
-    vn = index_sv * an
 
     index_stu = stu[ind2]
     index_stv = stv[ind2]
     tn = 1.0 / np.sqrt(index_stu**2 + index_stv**2 + 1)
-    tun = index_stu * tn
-    tvn = index_stv * tn
     '''
     angle = un * tun + vn * tvn + (an * tn)
     index = [angle == 1.0]
@@ -199,12 +192,6 @@ def flow_to_image(flow, maxrad=-1):
     idxUnknow = (abs(u) > UNKNOWN_FLOW_THRESH) | (abs(v) > UNKNOWN_FLOW_THRESH)
     u[idxUnknow] = 0
     v[idxUnknow] = 0
-
-    maxu = max(maxu, np.max(u))
-    minu = min(minu, np.min(u))
-
-    maxv = max(maxv, np.max(v))
-    minv = min(minv, np.min(v))
 
     if maxrad == -1:
         rad = np.sqrt(u**2 + v**2)
@@ -500,11 +487,11 @@ def resize_flow(flow, des_width, des_height, method='bilinear'):
     ratio_height = float(des_height) / float(src_height)
     ratio_width = float(des_width) / float(src_width)
     if method == 'bilinear':
-        flow = cv2.resize(flow, (des_width, des_height),
-                          interpolation=cv2.INTER_LINEAR)
+        flow = cv2.resize(
+            flow, (des_width, des_height), interpolation=cv2.INTER_LINEAR)
     elif method == 'nearest':
-        flow = cv2.resize(flow, (des_width, des_height),
-                          interpolation=cv2.INTER_NEAREST)
+        flow = cv2.resize(
+            flow, (des_width, des_height), interpolation=cv2.INTER_NEAREST)
     else:
         raise Exception('Invalid resize flow method!')
     flow[:, :, 0] = flow[:, :, 0] * ratio_width

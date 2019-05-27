@@ -3,7 +3,7 @@ import numbers
 import random
 import collections
 import numpy as np
-from PIL import Image, ImageOps, ImageEnhance, ImageFilter
+from PIL import Image, ImageOps, ImageFilter
 import scipy.ndimage as ndimage
 import torch
 import utils.flowlib as fl
@@ -172,6 +172,7 @@ class RandomVerticalFlip(object):
 
 
 class RandomGaussianBlur(object):
+
     def __call__(self, img_list, label_list, radius=2):
         if random.random() < 0.5:
             img_list = [
@@ -189,6 +190,7 @@ class RGB2BGR(object):
 
 
 class MultiScaleRandomCrop(object):
+
     def __init__(self, scale, size, method='nearest'):
         self.crop_h = size[0]
         self.crop_w = size[1]
@@ -275,10 +277,10 @@ class Crop(object):
             border = (pad_w_half, pad_h_half, pad_w - pad_w_half,
                       pad_h - pad_h_half)
             img_list = [
-                ImageOps.expand(img,
-                                border=border,
-                                fill=tuple(
-                                    [int(item) for item in self.padding]))
+                ImageOps.expand(
+                    img,
+                    border=border,
+                    fill=tuple([int(item) for item in self.padding]))
                 for img in img_list
             ]
             if len(label_list) > 0:
@@ -357,13 +359,9 @@ class PadToSize(object):
             ]
         else:
             img_list = [
-                pad_image('constant',
-                          img,
-                          top,
-                          bottom,
-                          left,
-                          right,
-                          value=self.fill) for img in img_list
+                pad_image(
+                    'constant', img, top, bottom, left, right, value=self.fill)
+                for img in img_list
             ]
 
         return img_list, label_list
@@ -447,14 +445,16 @@ class RandomRotate(object):
         angle2 = applied_angle + diff / 2
         angle1_rad = angle1 * np.pi / 180
 
-        img_list[0] = ndimage.interpolation.rotate(np.asarray(img_list[0]),
-                                                   angle1,
-                                                   reshape=self.reshape,
-                                                   order=self.order)
-        img_list[1] = ndimage.interpolation.rotate(np.asarray(img_list[1]),
-                                                   angle2,
-                                                   reshape=self.reshape,
-                                                   order=self.order)
+        img_list[0] = ndimage.interpolation.rotate(
+            np.asarray(img_list[0]),
+            angle1,
+            reshape=self.reshape,
+            order=self.order)
+        img_list[1] = ndimage.interpolation.rotate(
+            np.asarray(img_list[1]),
+            angle2,
+            reshape=self.reshape,
+            order=self.order)
         img_list[0] = Image.fromarray(img_list[0])
         img_list[1] = Image.fromarray(img_list[1])
 
@@ -464,15 +464,14 @@ class RandomRotate(object):
             assert c == 2
 
             def rotate_flow(i, j, k):
-                return -k * (j - w / 2) * (diff * np.pi / 180) + (1 - k) * (
-                    i - h / 2) * (diff * np.pi / 180)
+                return -k * (j - w / 2) * (diff * np.pi /
+                                           180) + (1 - k) * (i - h / 2) * (
+                                               diff * np.pi / 180)
 
             rotate_flow_map = np.fromfunction(rotate_flow, target.shape)
             target += rotate_flow_map
-            target = ndimage.interpolation.rotate(target,
-                                                  angle1,
-                                                  reshape=self.reshape,
-                                                  order=self.order)
+            target = ndimage.interpolation.rotate(
+                target, angle1, reshape=self.reshape, order=self.order)
             # flow vectors must be rotated too! careful about Y flow which is upside down
             target_ = np.copy(target)
             target[:, :, 0] = np.cos(angle1_rad) * target_[:, :, 0] + np.sin(
@@ -484,6 +483,7 @@ class RandomRotate(object):
 
 
 class RandomTranslate(object):
+
     def __init__(self, translation):
         if isinstance(translation, numbers.Number):
             self.translation = (int(translation), int(translation))

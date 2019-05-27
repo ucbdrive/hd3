@@ -33,64 +33,48 @@ def get_parser():
     parser.add_argument('--task', type=str, help='stereo or flow')
     parser.add_argument('--encoder', type=str, help='vgg or dlaup')
     parser.add_argument('--decoder', type=str, help='resnet or hda')
-    parser.add_argument('--context',
-                        action='store_true',
-                        default=False,
-                        help='context module')
+    parser.add_argument(
+        '--context', action='store_true', default=False, help='context module')
 
-    parser.add_argument('--base_lr',
-                        type=float,
-                        default=1e-4,
-                        help='learning rate')
-    parser.add_argument('--epochs',
-                        type=int,
-                        default=200,
-                        help='training epochs')
-    parser.add_argument('--batch_size',
-                        type=int,
-                        default=64,
-                        help='batch size')
-    parser.add_argument('--workers',
-                        type=int,
-                        default=16,
-                        help='data loader workers')
-    parser.add_argument('--weight_decay',
-                        type=float,
-                        default=4e-4,
-                        help='weight decay')
+    parser.add_argument(
+        '--base_lr', type=float, default=1e-4, help='learning rate')
+    parser.add_argument(
+        '--epochs', type=int, default=200, help='training epochs')
+    parser.add_argument(
+        '--batch_size', type=int, default=64, help='batch size')
+    parser.add_argument(
+        '--workers', type=int, default=16, help='data loader workers')
+    parser.add_argument(
+        '--weight_decay', type=float, default=4e-4, help='weight decay')
 
-    parser.add_argument('--pretrain',
-                        type=str,
-                        default='',
-                        help='path to pretrained model')
-    parser.add_argument('--pretrain_base',
-                        type=str,
-                        default='',
-                        help='path to pretrained base network')
-    parser.add_argument('--evaluate',
-                        action='store_true',
-                        default=False,
-                        help='evaluate on validation set')
-    parser.add_argument('--batch_size_val',
-                        type=int,
-                        default=1,
-                        help='batch size for validation during training')
-    parser.add_argument('--save_step',
-                        type=int,
-                        default=50,
-                        help='model save step')
-    parser.add_argument('--save_path',
-                        type=str,
-                        default='model',
-                        help='model and summary save path')
-    parser.add_argument('--print_freq',
-                        type=int,
-                        default=10,
-                        help='print frequency')
-    parser.add_argument('--visual_freq',
-                        type=int,
-                        default=20,
-                        help='visualization frequency')
+    parser.add_argument(
+        '--pretrain', type=str, default='', help='path to pretrained model')
+    parser.add_argument(
+        '--pretrain_base',
+        type=str,
+        default='',
+        help='path to pretrained base network')
+    parser.add_argument(
+        '--evaluate',
+        action='store_true',
+        default=False,
+        help='evaluate on validation set')
+    parser.add_argument(
+        '--batch_size_val',
+        type=int,
+        default=1,
+        help='batch size for validation during training')
+    parser.add_argument(
+        '--save_step', type=int, default=50, help='model save step')
+    parser.add_argument(
+        '--save_path',
+        type=str,
+        default='model',
+        help='model and summary save path')
+    parser.add_argument(
+        '--print_freq', type=int, default=10, help='print frequency')
+    parser.add_argument(
+        '--visual_freq', type=int, default=20, help='visualization frequency')
     return parser
 
 
@@ -122,9 +106,10 @@ def main():
                             args.context).cuda()
 
     logger.info(model)
-    optimizer = torch.optim.Adam(model.optim_parameters(),
-                                 lr=args.base_lr,
-                                 weight_decay=args.weight_decay)
+    optimizer = torch.optim.Adam(
+        model.optim_parameters(),
+        lr=args.base_lr,
+        weight_decay=args.weight_decay)
     model = nn.DataParallel(model).cuda()
 
     cudnn.enabled = True
@@ -145,31 +130,33 @@ def main():
             args.pretrain_base))
         base_prefix = "module.hd3net.encoder." if args.encoder!='dlaup' \
                       else "module.hd3net.encoder.base."
-        load_module_state_dict(model,
-                               torch.load(args.pretrain_base),
-                               add=base_prefix)
+        load_module_state_dict(
+            model, torch.load(args.pretrain_base), add=base_prefix)
         logger.info("=> loaded pretrained base model '{}'".format(
             args.pretrain_base))
 
     ### data loader ###
     train_transform, val_transform = datasets.get_transform(
         args.dataset_name, args.task, args.evaluate)
-    train_data = datasets.HD3Data(mode=args.task,
-                                  data_root=args.train_root,
-                                  data_list=args.train_list,
-                                  label_num=1,
-                                  transform=train_transform)
-    train_loader = torch.utils.data.DataLoader(train_data,
-                                               batch_size=args.batch_size,
-                                               shuffle=True,
-                                               num_workers=args.workers,
-                                               pin_memory=True)
+    train_data = datasets.HD3Data(
+        mode=args.task,
+        data_root=args.train_root,
+        data_list=args.train_list,
+        label_num=1,
+        transform=train_transform)
+    train_loader = torch.utils.data.DataLoader(
+        train_data,
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=args.workers,
+        pin_memory=True)
     if args.evaluate:
-        val_data = datasets.HD3Data(mode=args.task,
-                                    data_root=args.val_root,
-                                    data_list=args.val_list,
-                                    label_num=1,
-                                    transform=val_transform)
+        val_data = datasets.HD3Data(
+            mode=args.task,
+            data_root=args.val_root,
+            data_list=args.val_list,
+            label_num=1,
+            transform=val_transform)
         val_loader = torch.utils.data.DataLoader(
             val_data,
             batch_size=args.batch_size_val,
@@ -254,8 +241,8 @@ def train(train_loader, model, optimizer, epoch, batch_size):
         remain_time = remain_iter * batch_time.avg
         t_m, t_s = divmod(remain_time, 60)
         t_h, t_m = divmod(t_m, 60)
-        remain_time = '{:02d}:{:02d}:{:02d}'.format(int(t_h), int(t_m),
-                                                    int(t_s))
+        remain_time = '{:02d}:{:02d}:{:02d}'.format(
+            int(t_h), int(t_m), int(t_s))
 
         if (i + 1) % args.print_freq == 0:
             logger.info('Epoch: [{}/{}][{}/{}] '
@@ -297,11 +284,12 @@ def validate(val_loader, model):
                 label.to(torch.device("cuda")) for label in label_list
             ]
 
-            output = model(img_list=img_list,
-                           label_list=label_list,
-                           get_loss=True,
-                           get_epe=True,
-                           get_vis=i % args.visual_freq == 0)
+            output = model(
+                img_list=img_list,
+                label_list=label_list,
+                get_loss=True,
+                get_epe=True,
+                get_vis=i % args.visual_freq == 0)
 
             epe_meter.update(output['epe'].mean().data, img_list[0].size(0))
             if loss_meter is None:
@@ -350,9 +338,8 @@ def get_lr_scheduler(optimizer, dataset_name):
         milestones = [600, 900]
     else:
         raise ValueError('Unknown dataset name {}'.format(dataset_name))
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
-                                                     milestones=milestones,
-                                                     gamma=0.5)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(
+        optimizer, milestones=milestones, gamma=0.5)
     return scheduler
 
 

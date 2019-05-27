@@ -1,8 +1,12 @@
 import math
-import numpy as np
 import torch
 from torch import nn
 import torch.nn.functional as F
+
+__all__ = [
+    'flow_warp', 'vector2density', 'density2vector', 'prob_gather',
+    'disp2flow', 'downsample_flow', 'resize_dense_vector'
+]
 
 
 def flow_warp(x, flo, mul=True):
@@ -105,10 +109,11 @@ def downsample_flow(flo, scale_factor):
     B, C, H, W = flo.size()
     if flo.size(1) == 2:
         # dense format
-        flo = F.interpolate(flo,
-                            scale_factor=scale_factor,
-                            mode='bilinear',
-                            align_corners=True)
+        flo = F.interpolate(
+            flo,
+            scale_factor=scale_factor,
+            mode='bilinear',
+            align_corners=True)
         mask = torch.ones((B, 1, int(H * scale_factor), int(W * scale_factor)),
                           dtype=torch.float,
                           device=flo.device)
@@ -123,9 +128,8 @@ def downsample_flow(flo, scale_factor):
 def resize_dense_vector(vec, des_height, des_width):
     ratio_height = float(des_height / vec.size(2))
     ratio_width = float(des_width / vec.size(3))
-    vec = F.interpolate(vec, (des_height, des_width),
-                        mode='bilinear',
-                        align_corners=True)
+    vec = F.interpolate(
+        vec, (des_height, des_width), mode='bilinear', align_corners=True)
     if vec.size(1) == 1:
         vec = vec * ratio_width
     else:

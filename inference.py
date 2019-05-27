@@ -1,5 +1,5 @@
 import os
-from os.path import join, split
+from os.path import join
 import cv2
 import time
 import math
@@ -38,16 +38,15 @@ def get_parser():
         help=
         'batch size larger than 1 may have issues when input images have different sizes'
     )
-    parser.add_argument('--workers',
-                        type=int,
-                        default=8,
-                        help='data loader workers')
+    parser.add_argument(
+        '--workers', type=int, default=8, help='data loader workers')
     parser.add_argument('--model_path', type=str, help='evaluation model path')
     parser.add_argument('--save_folder', type=str, help='results save folder')
-    parser.add_argument('--flow_format',
-                        type=str,
-                        default='png',
-                        help='saved flow format, png or flo')
+    parser.add_argument(
+        '--flow_format',
+        type=str,
+        default='png',
+        help='saved flow format, png or flo')
     parser.add_argument('--evaluate', action='store_true', default=False)
     return parser
 
@@ -100,17 +99,19 @@ def main():
     val_transform = transforms.Compose(
         [transforms.ToTensor(),
          transforms.Normalize(mean=mean, std=std)])
-    val_data = datasets.HD3Data(mode=args.task,
-                                data_root=args.data_root,
-                                data_list=args.data_list,
-                                label_num=args.evaluate,
-                                transform=val_transform,
-                                out_size=True)
-    val_loader = torch.utils.data.DataLoader(val_data,
-                                             batch_size=args.batch_size,
-                                             shuffle=False,
-                                             num_workers=args.workers,
-                                             pin_memory=True)
+    val_data = datasets.HD3Data(
+        mode=args.task,
+        data_root=args.data_root,
+        data_list=args.data_list,
+        label_num=args.evaluate,
+        transform=val_transform,
+        out_size=True)
+    val_loader = torch.utils.data.DataLoader(
+        val_data,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=args.workers,
+        pin_memory=True)
 
     corr_range = [4, 4, 4, 4, 4, 4]
     if args.task == 'flow':
@@ -156,14 +157,15 @@ def main():
 
             # resize test
             resized_img_list = [
-                F.interpolate(img, (th, tw),
-                              mode='bilinear',
-                              align_corners=True) for img in img_list
+                F.interpolate(
+                    img, (th, tw), mode='bilinear', align_corners=True)
+                for img in img_list
             ]
-            output = model(img_list=resized_img_list,
-                           label_list=label_list,
-                           get_vect=True,
-                           get_epe=args.evaluate)
+            output = model(
+                img_list=resized_img_list,
+                label_list=label_list,
+                get_vect=True,
+                get_epe=args.evaluate)
             scale_factor = 1 / 2**(7 - len(corr_range))
             output['vect'] = resize_dense_vector(output['vect'] * scale_factor,
                                                  img_size[0, 1],
@@ -180,10 +182,11 @@ def main():
                     'Test: [{}/{}] '
                     'Data {data_time.val:.3f} ({data_time.avg:.3f}) '
                     'Batch {batch_time.val:.3f} ({batch_time.avg:.3f}).'.
-                    format(i + 1,
-                           len(val_loader),
-                           data_time=data_time,
-                           batch_time=batch_time))
+                    format(
+                        i + 1,
+                        len(val_loader),
+                        data_time=data_time,
+                        batch_time=batch_time))
 
             pred_vect = output['vect'].data.cpu().numpy()
             pred_vect = np.transpose(pred_vect, (0, 2, 3, 1))
@@ -206,7 +209,7 @@ def main():
                 else:
                     vis_flo = fl.flow_to_image(fl.disp2flow(curr_vect))
                 vis_flo = cv2.cvtColor(vis_flo, cv2.COLOR_RGB2BGR)
-                vis_flo = cv2.imwrite(vis_fn, vis_flo)
+                cv2.imwrite(vis_fn, vis_flo)
 
                 # save point estimates
                 fn_suffix = 'png'

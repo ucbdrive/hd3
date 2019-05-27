@@ -1,36 +1,38 @@
-import math
-import torch
 import torch.nn as nn
 
 BatchNorm = nn.BatchNorm2d
 
 
 class BasicBlock(nn.Module):
+
     def __init__(self, in_planes, out_planes):
         super(BasicBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_planes,
-                               out_planes,
-                               kernel_size=3,
-                               stride=2,
-                               padding=1,
-                               dilation=1,
-                               bias=False)
+        self.conv1 = nn.Conv2d(
+            in_planes,
+            out_planes,
+            kernel_size=3,
+            stride=2,
+            padding=1,
+            dilation=1,
+            bias=False)
         self.bn1 = BatchNorm(out_planes)
-        self.conv2 = nn.Conv2d(out_planes,
-                               out_planes,
-                               kernel_size=3,
-                               stride=1,
-                               padding=1,
-                               dilation=1,
-                               bias=False)
+        self.conv2 = nn.Conv2d(
+            out_planes,
+            out_planes,
+            kernel_size=3,
+            stride=1,
+            padding=1,
+            dilation=1,
+            bias=False)
         self.bn2 = BatchNorm(out_planes)
-        self.conv3 = nn.Conv2d(out_planes,
-                               out_planes,
-                               kernel_size=3,
-                               stride=1,
-                               padding=1,
-                               dilation=1,
-                               bias=False)
+        self.conv3 = nn.Conv2d(
+            out_planes,
+            out_planes,
+            kernel_size=3,
+            stride=1,
+            padding=1,
+            dilation=1,
+            bias=False)
         self.bn3 = BatchNorm(out_planes)
         self.relu = nn.ReLU(inplace=True)
 
@@ -51,6 +53,7 @@ class BasicBlock(nn.Module):
 
 
 class VGG(nn.Module):
+
     def __init__(self, block, planes):
         super(VGG, self).__init__()
         self.levels = len(planes)

@@ -1,7 +1,11 @@
 import os
-import math
 import torch
 from torch import nn
+
+__all__ = [
+    'AverageMeter', 'freeze_model', 'cuda_to_cpu', 'load_module_state_dict',
+    'check_mkdir', 'check_makedirs'
+]
 
 
 class AverageMeter(object):
@@ -87,29 +91,6 @@ def load_module_state_dict(net, state_dict, add=None, strict=False):
         missing = set(own_state.keys()) - set(state_dict.keys())
         if len(missing) > 0:
             raise KeyError('missing keys in state_dict: "{}"'.format(missing))
-
-
-def step_learning_rate(optimizer, base_lr, epoch, step_epoch, multiplier=0.1):
-    """Sets the learning rate to the base LR decayed by 10 every step epochs"""
-    lr = base_lr * (multiplier**(epoch // step_epoch))
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
-
-
-def poly_learning_rate(optimizer,
-                       base_lr,
-                       curr_iter,
-                       max_iter,
-                       power=0.9,
-                       index_split=4,
-                       scale_lr=10.0):
-    """poly learning rate policy"""
-    lr = base_lr * (1 - float(curr_iter) / max_iter)**power
-    for index, param_group in enumerate(optimizer.param_groups):
-        if index <= index_split:
-            param_group['lr'] = lr
-        else:
-            param_group['lr'] = lr * scale_lr
 
 
 def check_mkdir(dir_name):

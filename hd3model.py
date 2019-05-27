@@ -6,6 +6,7 @@ from utils.visualizer import get_visualization
 
 
 class HD3Model(nn.Module):
+
     def __init__(self, task, encoder, decoder, corr_range=None, context=False):
         super(HD3Model, self).__init__()
         self.ds = 6  # default downsample ratio of the coarsest level
