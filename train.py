@@ -137,8 +137,7 @@ def main():
             logger.info("=> loading checkpoint '{}'".format(ckpt_name))
             checkpoint = torch.load(ckpt_name)
             model.load_state_dict(checkpoint['state_dict'])
-            logger.info("=> loaded checkpoint '{}' (epoch {})".format(
-                ckpt_name, checkpoint['epoch']))
+            logger.info("=> loaded checkpoint '{}'".format(ckpt_name))
         else:
             logger.info("=> no checkpoint found at '{}'".format(ckpt_name))
     elif args.pretrain_base:

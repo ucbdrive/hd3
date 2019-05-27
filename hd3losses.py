@@ -17,7 +17,7 @@ class LossCalculator(object):
     def __call__(self, ms_prob, ms_pred, gt, corr_range, ds=6):
         B, C, H, W = gt.size()
         lv = len(ms_prob)
-        criterion = nn.KLDivLoss().cuda()
+        criterion = nn.KLDivLoss(reduction='batchmean').cuda()
         losses = {}
         kld_loss = 0
         for l in range(lv):
@@ -32,7 +32,7 @@ class LossCalculator(object):
             scaled_gt = scaled_gt / 2**(ds - l)
             gt_dist = vector2density(scaled_gt, corr_range[l],
                                      self.dim) * valid_mask
-            kld_loss += ms_prob[l].size(1) * criterion(
+            kld_loss += 4**(ds - l) / (H*W) * criterion(
                 F.log_softmax(ms_prob[l], dim=1), gt_dist.detach())
 
         losses['total'] = kld_loss
