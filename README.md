@@ -6,7 +6,7 @@ Hierarchical Discrete Distribution Decomposition for Match Density Estimation (C
 
 [Zhichao Yin](http://zhichaoyin.me/), [Trevor Darrell](https://people.eecs.berkeley.edu/~trevor/), [Fisher Yu](https://www.yf.io/)
 
-It tackles the problem of probabilistic pixel matching, with applications including stereo matching and optical flow. HD<sup>3</sup> achieves state-of-the-art results for both tasks on established benchmarks ([KITTI](http://www.cvlibs.net/datasets/kitti/index.php) & [MPI Sintel](http://sintel.is.tue.mpg.de/)).
+We propose a framework suitable for learning probabilistic pixel correspondences. It has applications including stereo matching and optical flow, with inherent uncertainty estimation. HD<sup>3</sup> achieves state-of-the-art results for both tasks on established benchmarks ([KITTI](http://www.cvlibs.net/datasets/kitti/index.php) & [MPI Sintel](http://sintel.is.tue.mpg.de/)).
 
 arxiv preprint: (https://arxiv.org/abs/1812.06264)
 
@@ -17,44 +17,52 @@ arxiv preprint: (https://arxiv.org/abs/1812.06264)
 This code has been tested with Python 3.6, PyTorch 1.0 and CUDA 9.0 on Ubuntu 16.04.
 
 ## Getting Started
-- Clone this repo:
-```bash
-git clone https://github.com/ucbdrive/hd3
-cd hd3
-```
 - Install PyTorch 1.0 and we recommend using anaconda3 for managing the python environment. You can install all the dependencies by the following:
 ```bash
 pip install -r requirements.txt
 ```
 - Download all the relevant datasets including the [FlyingChairs dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/FlyingChairs.en.html), the [FlyingThings3D dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/SceneFlowDatasets.en.html) (we use ``DispNet/FlowNet2.0 dataset subsets`` following the practice of FlowNet 2.0), the [KITTI dataset](http://www.cvlibs.net/datasets/kitti/index.php), and the [MPI Sintel dataset](http://sintel.is.tue.mpg.de/).
 
-## Model training
+## Model Training
 To train a model on a specific dataset, simply run
 ```bash
 bash scripts/train.sh
 ```
-You can specify the dataset type (e.g. FlyingChairs) via `--dataset_name`, alternate the network architecture via `--encoder` and `--decoder`, and switch the task (stereo or flow) you solve via `--task`.
+Note the scripts contain several placeholders which you should replace with your customized choices. For instance, you can specify the dataset type (e.g. FlyingChairs) via `--dataset_name`, alternate the network architecture via `--encoder` and `--decoder`, and switch the task (stereo or flow) you solve via `--task`.
+
+You can then start a tensorboard session by
+```bash
+tensorboard --logdir=/path/to/log/files --port=8964
+```
+and visualize your training progress by accessing [https://localhost:8964](https://localhost:8964) on you browser.
 - We provide the learning rate schedules and augmentation configurations in all of our experiments. For other detailed hyperparameters, please refer to our paper so as to reproduce our result.
 
-## Model inference
+## Model Inference
 To test a model on a folder of images, please run
 ```bash
 bash scripts/test.sh
 ```
-Please provide the list of image pair names and pass it to `--data_list`. This script will generate predictions for every pair of images and save them in the `--save_folder` with the same folder hierarchy as input images. You can choose the saved flow format (e.g. png or flo) via `--flow_format`.
+Please provide the list of image pair names and pass it to `--data_list`. This script will generate predictions for every pair of images and save them in the `--save_folder` with the same folder hierarchy as input images. You can choose the saved flow format (e.g. png or flo) via `--flow_format`. When the folder contains images of different input sizes (e.g. KITTI), please make sure the `--batch_size` is 1.
+- When the ground truth is available, you can optionally enable the argument `--evaluate` to calculate the End-Point-Error of your predictions. Please make sure the list consists of `img-name1 img-name2 gtruth-name` in each line.
+
+## Model Zoo
+We provide pretrained models for all of our experiments. To download them, simply run
+```bash
+bash scripts/download_models.sh
+```
+The names of the models come in the format of `model-name_dataset-names`. Models are named as `hd3f/hd3s` for optical flow and stereo matching. A suffix of `c` is appended for models with context module. The `dataset_names` indicates our dataset schedule for training the model. You should be able to obtain similar results by running the test script we provide.
 
 ## Citation
 If you find our work or our repo useful in your research, please consider citing our paper:
 ```
-@inproceedings{yin2019hd3,
-title = {Hierarchical Discrete Distribution Decomposition
-for Match Density Estimation},
-author = {Yin, Zhichao and Darrell, Trevor and Yu,
-Fisher},
-booktitle = {CVPR},
+@InProceedings{Yin_2019_CVPR,
+author = {Yin, Zhichao and Darrell, Trevor and Yu, Fisher},
+title = {Hierarchical Discrete Distribution Decomposition for Match Density Estimation},
+booktitle = {The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+month = {June},
 year = {2019}
 }
 ```
 
 ## Acknowledgements
-We thank [Simon Niklaus](http://sniklaus.com/) for his PyTorch implementation of the [correlation operator](https://github.com/sniklaus/pytorch-pwc) and [Clément Pinard](http://perso.ensta.fr/~pinard/) for his PyTorch [FlowNet implementation](https://github.com/ClementPinard/FlowNetPytorch).
+We thank [Houning Hu](https://eborboihuc.github.io/) for making the [teaser image](https://github.com/ucbdrive/hd3/blob/master/misc/teaser.jpg), [Simon Niklaus](http://sniklaus.com/) for the [correlation operator](https://github.com/sniklaus/pytorch-pwc) and [Clément Pinard](http://perso.ensta.fr/~pinard/) for the [FlowNet implementation](https://github.com/ClementPinard/FlowNetPytorch).
