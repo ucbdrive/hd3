@@ -12,6 +12,7 @@ class LossCalculator(object):
         self.dim = 1 if task == 'stereo' else 2
 
     def __call__(self, ms_prob, ms_pred, gt, corr_range, ds=6):
+        B, C, H, W = gt.size()
         lv = len(ms_prob)
         criterion = nn.KLDivLoss(reduction='batchmean').cuda()
         losses = {}
