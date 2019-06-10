@@ -47,15 +47,3 @@ class HD3Model(nn.Module):
                                               ms_prob, self.ds)
 
         return result
-
-    def optim_parameters(self):
-        if self.encoder == 'dlaup':
-            for param in self.hd3net.encoder.base.parameters():
-                if param.requires_grad:
-                    yield param
-            for param in self.hd3net.encoder.dla_up.parameters():
-                if param.requires_grad:
-                    yield param
-        for param in self.hd3net.parameters():
-            if param.requires_grad:
-                yield param

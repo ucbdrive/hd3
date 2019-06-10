@@ -107,7 +107,7 @@ def main():
 
     logger.info(model)
     optimizer = torch.optim.Adam(
-        model.optim_parameters(),
+        model.parameters(),
         lr=args.base_lr,
         weight_decay=args.weight_decay)
     model = nn.DataParallel(model).cuda()
