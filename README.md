@@ -28,7 +28,7 @@ To train a model on a specific dataset, simply run
 ```bash
 bash scripts/train.sh
 ```
-Note the scripts contain several placeholders which you should replace with your customized choices. For instance, you can specify the dataset type (e.g. FlyingChairs) via `--dataset_name`, alternate the network architecture via `--encoder` and `--decoder`, and switch the task (stereo or flow) you solve via `--task`.
+Note the scripts contain several placeholders which you should replace with your customized choices. For instance, you can specify the dataset type (e.g. FlyingChairs) via `--dataset_name`, alternate the network architecture via `--encoder` and `--decoder`, and switch the task (stereo or flow) you solve via `--task`. You can also partly load the weights of a pretrained backbone network via `--pretrain_base` (download ImageNet pretrained DLA-34 [here](http://dl.yf.io/dla/models/imagenet/dla34-ba72cf86.pth)), or strictly initialize the weights from a pretrained model via `--pretrain`.
 
 You can then start a tensorboard session by
 ```bash
