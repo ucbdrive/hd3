@@ -6,7 +6,7 @@ Hierarchical Discrete Distribution Decomposition for Match Density Estimation (C
 
 [Zhichao Yin](http://zhichaoyin.me/), [Trevor Darrell](https://people.eecs.berkeley.edu/~trevor/), [Fisher Yu](https://www.yf.io/)
 
-We propose a framework suitable for learning probabilistic pixel correspondences. It has applications including stereo matching and optical flow, with inherent uncertainty estimation. HD<sup>3</sup> achieves state-of-the-art results for both tasks on established benchmarks ([KITTI](http://www.cvlibs.net/datasets/kitti/index.php) & [MPI Sintel](http://sintel.is.tue.mpg.de/)).
+We propose a framework suitable for learning probabilistic pixel correspondences. It has applications including but not limited to stereo matching and optical flow, with inherent uncertainty estimation. HD<sup>3</sup> achieves state-of-the-art results for both tasks on established benchmarks ([KITTI](http://www.cvlibs.net/datasets/kitti/index.php) & [MPI Sintel](http://sintel.is.tue.mpg.de/)).
 
 arxiv preprint: (https://arxiv.org/abs/1812.06264)
 
