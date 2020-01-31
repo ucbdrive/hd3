@@ -68,6 +68,10 @@ year = {2019}
 - Why are the model outputs different even for the same input in different runs?
 
   Some PyTorch ops are non-deterministic (e.g. torch.tensor.scatter_add_). If you fix all the random seeds for Python and PyTorch, you shall get identical results.
+  
+- Why does the model finetuned on the KITTI dataset exhibit artifacts in the sky regions?
+
+  This is due to the limited amount of data during finetuning stage. Effective solutions to resolve it include an additional smoothness loss term during finetuning and knowledge distillation from the model pretrained on the synthetic datasets.
 
 ## Acknowledgements
 We thank [Houning Hu](https://eborboihuc.github.io/) for making the [teaser image](https://github.com/ucbdrive/hd3/blob/master/misc/teaser.jpg), [Simon Niklaus](http://sniklaus.com/) for the [correlation operator](https://github.com/sniklaus/pytorch-pwc) and [Clément Pinard](http://perso.ensta.fr/~pinard/) for the [FlowNet implementation](https://github.com/ClementPinard/FlowNetPytorch).
