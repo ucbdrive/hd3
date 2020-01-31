@@ -10,7 +10,7 @@ hd3f_chairs_things_sintel-5b4ad51a.pth
 hd3fc_chairs-1367436d.pth
 hd3fc_chairs_things-0b92a7f5.pth
 hd3fc_chairs_things_kitti-bfa97911.pth
-hd3fc_chairs_things_sintel-0b6e4b67.pth
+hd3fc_chairs_things_sintel-0be17c83.pth
 hd3s_things-8b4dcd6d.pth
 hd3s_things_kitti-1243813e.pth
 hd3sc_things-57947496.pth
