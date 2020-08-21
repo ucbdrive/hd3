@@ -72,6 +72,10 @@ year = {2019}
 - Why does the model finetuned on the KITTI dataset exhibit artifacts in the sky regions?
 
   This is due to the limited amount of data during finetuning stage. Effective solutions to resolve it include an additional smoothness loss term during finetuning and knowledge distillation from the model pretrained on the synthetic datasets.
+  
+- Why does my evaluation metric look abnormal?
+
+  Please confirm the synthetic dataset you are using is ``DispNet/FlowNet2.0 dataset subsets`` rather than the original complete version (the data format has subtle differences actually).
 
 ## Acknowledgements
 We thank [Houning Hu](https://eborboihuc.github.io/) for making the [teaser image](https://github.com/ucbdrive/hd3/blob/master/misc/teaser.jpg), [Simon Niklaus](http://sniklaus.com/) for the [correlation operator](https://github.com/sniklaus/pytorch-pwc) and [Clément Pinard](http://perso.ensta.fr/~pinard/) for the [FlowNet implementation](https://github.com/ClementPinard/FlowNetPytorch).
